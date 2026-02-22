@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include "builtins.h"
+
 #define SHELL_PROMPT_MSG "tinyshell> "
 /* Get shell prompt line from standard input s*/
 ssize_t shell_prompt_getline(char **line, size_t *line_buffer_size)
@@ -87,6 +89,13 @@ int main(void)
     argv = shell_tokenizer(line, line_len, &argc);
 
     assert(argv != NULL && argc > 0);
+
+    /* We substract the end NULL argument */
+    if (handle_builtin(argv, (int)argc - 1))
+    {
+      free(argv);
+      continue;
+    }
 
     /* Create child process */
     fflush(stderr);
